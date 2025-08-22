@@ -1,0 +1,29 @@
+name: 每日报告邮件
+
+on:
+  schedule:
+    - cron: "0 8 * * *"  # 每天早上 8 点触发（UTC 时间）
+  workflow_dispatch:   # 手动触发
+
+jobs:
+  send_email:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 仓库
+        uses: actions/checkout@v3
+
+      - name: 安装 Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: 安装依赖
+        run: pip install yagmail
+
+      - name: 发送邮件
+        env:
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
+          RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
+        run: python send_email.py
